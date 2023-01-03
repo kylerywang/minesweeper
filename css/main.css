@@ -1,0 +1,29 @@
+*{
+    box-sizing: border-box;
+}
+
+body{
+    text-align:center;
+}
+
+#board{
+    height:700px;
+    width:700px;
+    margin:auto;
+    display:flex;
+    flex-flow: wrap;
+}
+
+#board > div{
+    border:2px solid black;
+    height: 10%;
+    width:10%;
+    margin:0%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+button {
+    margin-top:2rem;
+}
