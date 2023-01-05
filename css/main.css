@@ -6,6 +6,8 @@ body{
     text-align:center;
 }
 
+
+
 #board{
     height:700px;
     width:700px;
@@ -24,6 +26,15 @@ body{
     justify-content:center;
 }
 
+#top-bar {
+    background-color: lightgrey;
+    display:flex;
+    width:700px;
+    margin: auto;
+    justify-content: space-evenly;
+}
+
+
 button {
-    margin-top:2rem;
+    display:flex;
 }

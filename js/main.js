@@ -3,7 +3,7 @@
 const NUM_BOMBS = 13;
 
 /*----- app's state (variables) -----*/
-let gameStatus, boardRevealed, boardAdjBombs, bombIdxes;
+let gameStatus, boardRevealed, boardAdjBombs, bombIdxes, time;
 
 //boardRevealed is 0, 1, or -1. 0 is not revealed, 1 is revealed, -1 is flagged
 //gameStatus is "notStarted", "started", "win", "loss"
@@ -12,7 +12,8 @@ let gameStatus, boardRevealed, boardAdjBombs, bombIdxes;
 const h2El = document.querySelector('h2')
 const boardEl = document.getElementById('board')
 const resetBtnEl = document.createElement("button")
-
+const topBar = document.getElementById('top-bar')
+const timerEl = document.createElement("h2")
 
 /*----- event listeners -----*/
 boardEl.addEventListener('click', handleBoardClick)
@@ -22,6 +23,7 @@ resetBtnEl.addEventListener('click', handleReset);
 
 /*----- functions -----*/
 function init() {
+    time = 0;
     boardRevealed = new Array(100).fill(0);
     boardAdjBombs = new Array(100).fill(null)
     bombIdxes = [];
@@ -33,6 +35,7 @@ function render() {
     renderBoard()
     renderMessage()
     renderResetBtn();
+    renderTimer();
 }
 
 function handleBoardClick(evt) {
@@ -50,6 +53,14 @@ function handleBoardClick(evt) {
     }
     checkWin()
     render()
+}
+
+function timer(){
+    timerInterval = setInterval(incrementTimer,1000)
+    function incrementTimer(){
+        time++; 
+        render()
+    }
 }
 
 function reveal(idx){
@@ -132,7 +143,6 @@ function reveal(idx){
 
 function checkWin(){ 
     let tally = boardRevealed.filter(x => x===1).length
-    console.log(tally)
     if (tally === (100 - NUM_BOMBS)){
         win()
     }
@@ -142,13 +152,18 @@ function checkWin(){
 function handleBoardRightClick(evt){
     evt.preventDefault();
     let idx = evt.target.id;
-    if (gameStatus === "started"){
+    if (gameStatus === "started" && boardRevealed[idx] === 0){
         boardRevealed[idx] = -1;
+    } else if(gameStatus === "started" && boardRevealed[idx] === -1){
+        boardRevealed[idx] = 0;
     }
     render()
 }
 
+
+
 function generateBoard(idx){
+    timer()
     while(bombIdxes.length < NUM_BOMBS){
         let randNum = Math.floor(Math.random() * 100);
         if((bombIdxes.indexOf(randNum) === -1) && (randNum !== idx) && (randNum !== idx+1)&& (randNum !== idx- 1)&& (randNum !== idx+10)&& (randNum !== idx+9)&& (randNum !== idx+11)&& (randNum !== idx-10)&& (randNum !== idx-11)&& (randNum !== idx-9)) {
@@ -189,7 +204,6 @@ function generateBoard(idx){
 }
 
 function renderMessage() {
-    console.log(gameStatus)
     switch(gameStatus){
         case 'notStarted':
             h2El.innerText = "Click any square to start the game!";
@@ -216,12 +230,12 @@ function renderBoard() {
          const idx = parseInt(square.id)
         if(boardRevealed[idx] === 1) {
             if(isBomb(idx)){
-                square.innerText = "BOMB!"
+                square.innerText= "BOMB";
             } else{
                 square.innerText = boardAdjBombs[idx].toString();
             }
         } else if (boardRevealed[idx] === -1 ){
-            square.innerText = "flag"
+            square.innerHTML = '\u2691';
         } else if (boardRevealed[idx] === 0){
             square.innerText = ""
         }
@@ -230,16 +244,22 @@ function renderBoard() {
 
 function loss(){
     gameStatus = "loss";
+    clearInterval(timerInterval);
 }
 
 function win(){
     gameStatus = "win";
+    clearInterval(timerInterval);
 }
 
 
+function renderTimer(){
+    timerEl.innerText = `${time}`
+    topBar.append(timerEl);
+}
 
 function renderResetBtn(){
-    resetBtnEl.innerText = "Reset board"
+    resetBtnEl.innerText = "RESET"
     document.querySelector("body").append(resetBtnEl);
 }
 
