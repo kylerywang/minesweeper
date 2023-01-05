@@ -4,8 +4,13 @@
 
 body{
     text-align:center;
+    font-family: "Trebuchet MS", sans-serif;
+    font-weight: bold;
 }
 
+h1{
+    color:red;
+}
 
 
 #board{
@@ -34,7 +39,12 @@ body{
     justify-content: space-evenly;
 }
 
+#top-bar > h2{
+
+}
 
 button {
-    display:flex;
+    /* margin:2px auto;
+    display:flex; */
+    border:none;
 }

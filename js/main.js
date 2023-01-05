@@ -3,7 +3,7 @@
 const NUM_BOMBS = 13;
 
 /*----- app's state (variables) -----*/
-let gameStatus, boardRevealed, boardAdjBombs, bombIdxes, time;
+let gameStatus, boardRevealed, boardAdjBombs, bombIdxes, time, flagsRemaining;
 
 //boardRevealed is 0, 1, or -1. 0 is not revealed, 1 is revealed, -1 is flagged
 //gameStatus is "notStarted", "started", "win", "loss"
@@ -14,6 +14,7 @@ const boardEl = document.getElementById('board')
 const resetBtnEl = document.createElement("button")
 const topBar = document.getElementById('top-bar')
 const timerEl = document.createElement("h2")
+const flagsRemainingEl = document.createElement("h2")
 
 /*----- event listeners -----*/
 boardEl.addEventListener('click', handleBoardClick)
@@ -36,6 +37,7 @@ function render() {
     renderMessage()
     renderResetBtn();
     renderTimer();
+    renderRemainingFlags();
 }
 
 function handleBoardClick(evt) {
@@ -229,15 +231,47 @@ function renderBoard() {
     for (let square of boardEl.children) {
          const idx = parseInt(square.id)
         if(boardRevealed[idx] === 1) {
+            square.style.backgroundColor = "lightgrey";
             if(isBomb(idx)){
                 square.innerText= "BOMB";
             } else{
-                square.innerText = boardAdjBombs[idx].toString();
+                switch(boardAdjBombs[idx]){
+                    case 0:
+                        square.innerText = ""
+                        break;
+                    case 1:
+                        square.innerHTML = `<p style= "color: blue;">${boardAdjBombs[idx].toString()} <p>`;
+                
+                        break;
+                    case 2:
+                        square.innerHTML = `<p style= "color: green;">${boardAdjBombs[idx].toString()} <p>`;
+                        break;
+                    case 3:
+                        square.innerHTML = `<p style= "color: red;">${boardAdjBombs[idx].toString()} <p>`;
+                        break;
+                    case 4:
+                        square.innerHTML = `<p style= "color: yellow;">${boardAdjBombs[idx].toString()} <p>`;
+                        break;
+                    case 5:
+                        square.innerHTML = `<p style= "color: purple;">${boardAdjBombs[idx].toString()} <p>`;
+                        break;
+                    case 6:
+                        square.innerHTML = `<p style= "color: brown;">${boardAdjBombs[idx].toString()} <p>`;
+                        break;
+                    case 7:
+                        square.innerHTML = `<p style= "color: orange;">${boardAdjBombs[idx].toString()} <p>`;
+                        break;
+                    case 8:
+                        square.innerHTML = `<p style= "color: black;">${boardAdjBombs[idx].toString()} <p>`;
+                        break;
+                }
+                    
             }
         } else if (boardRevealed[idx] === -1 ){
             square.innerHTML = '\u2691';
         } else if (boardRevealed[idx] === 0){
             square.innerText = ""
+            square.style.backgroundColor = "white"
         }
         }
 }
@@ -254,17 +288,25 @@ function win(){
 
 
 function renderTimer(){
-    timerEl.innerText = `${time}`
+    timerEl.innerHTML = `${time}s`
     topBar.append(timerEl);
 }
 
 function renderResetBtn(){
     resetBtnEl.innerText = "RESET"
-    document.querySelector("body").append(resetBtnEl);
+    // document.querySelector("body").append(resetBtnEl);
+    topBar.append(resetBtnEl);
+}
+
+function renderRemainingFlags(){
+    flagsRemaining = NUM_BOMBS - boardRevealed.filter(x => x===-1).length; 
+    flagsRemainingEl.innerHTML = `${flagsRemaining}\u2691`
+    topBar.append(flagsRemainingEl);
 }
 
 function handleReset(){
     resetBtnEl.remove()
+    clearInterval(timerInterval);
     init()
 }
 
