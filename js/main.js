@@ -1,27 +1,4 @@
 /*----- constants -----*/
-// const PLAYERS = {
-//     '1': {
-//         name: 'Player 1',
-//         symbol: 'X',
-//         color: 'red'
-//     },
-//     '-1': {
-//         name: 'Player 2',
-//         symbol: 'O',
-//         color: 'blue'
-//     }
-// }
-
-// const WIN_COMBOS = [
-//     [0, 1, 2],
-//     [3, 4, 5],
-//     [6, 7, 8],
-//     [0, 3, 6],
-//     [1, 4, 7],
-//     [2, 5, 8],
-//     [0, 4, 8],
-//     [2, 4, 6]
-// ]
 
 const NUM_BOMBS = 13;
 
@@ -53,11 +30,9 @@ function init() {
 }
 
 function render() {
-    renderMessage()
     renderBoard()
-    if (gameStatus === "win" || "loss"){
-        renderResetBtn();
-    }
+    renderMessage()
+    renderResetBtn();
 }
 
 function handleBoardClick(evt) {
@@ -71,8 +46,9 @@ function handleBoardClick(evt) {
             loss();
         };
         reveal(idx)
-        checkWin()
+        
     }
+    checkWin()
     render()
 }
 
@@ -213,7 +189,21 @@ function generateBoard(idx){
 }
 
 function renderMessage() {
-    h2El.innerText = gameStatus;
+    console.log(gameStatus)
+    switch(gameStatus){
+        case 'notStarted':
+            h2El.innerText = "Click any square to start the game!";
+            break;
+        case 'started':
+            h2El.innerText = " ";
+            break;
+        case 'win':
+            h2El.innerText = "YOU WON.";
+            break;
+        case 'loss':    
+            h2El.innerText = "YOU LOST."
+            break;
+    }
 }
 
 function isBomb(idx){
@@ -249,7 +239,7 @@ function win(){
 
 
 function renderResetBtn(){
-    resetBtnEl.innerText = "Play Again"
+    resetBtnEl.innerText = "Reset board"
     document.querySelector("body").append(resetBtnEl);
 }
 
