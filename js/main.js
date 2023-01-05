@@ -23,12 +23,13 @@
 //     [2, 4, 6]
 // ]
 
-const NUM_BOMBS = 10;
+const NUM_BOMBS = 13;
 
 /*----- app's state (variables) -----*/
 let gameStatus, boardRevealed, boardAdjBombs, bombIdxes;
 
 //boardRevealed is 0, 1, or -1. 0 is not revealed, 1 is revealed, -1 is flagged
+//gameStatus is "notStarted", "started", "win", "loss"
 
 /*----- cached element references -----*/
 const h2El = document.querySelector('h2')
@@ -54,7 +55,7 @@ function init() {
 function render() {
     renderMessage()
     renderBoard()
-    if (gameStatus === "gameOver"){
+    if (gameStatus === "win" || "loss"){
         renderResetBtn();
     }
 }
@@ -63,28 +64,103 @@ function handleBoardClick(evt) {
     let idx = parseInt(evt.target.id);
     if (gameStatus === "notStarted"){
         generateBoard(idx);
-
+        reveal(idx)
+    }    
+    if (gameStatus === "started"){
+        if (isBomb(idx)){
+            loss();
+        };
+        reveal(idx)
+        checkWin()
     }
-    if (isBomb(idx)){
-        loss();
-    }
-
-    
-    reveal(idx)
-    checkWin()
     render()
 }
 
 function reveal(idx){
+    if (idx<0 || idx > 99){
+        return
+    }
     boardRevealed[idx] = 1;
-    if (boardAdjBombs[idx] === 0){
-        reveal(idx+1);
+    if (boardAdjBombs[idx] === 0 && !isBomb(idx)){
+        let remainder = idx%10;
+        switch(remainder){
+            case 0:
+                if (!boardRevealed[idx+1]){
+                    reveal(idx+1);
+                }
+
+                if (!boardRevealed[idx+10]){
+                    reveal(idx+10);
+                } 
+
+                if (!boardRevealed[idx+11]){
+                    reveal(idx+11);
+                } 
+                if (!boardRevealed[idx-10]){
+                    reveal(idx-10);
+                } 
+                if (!boardRevealed[idx-9]){
+                    reveal(idx-9);
+                } 
+                break;
+            case 9:
+
+                if (!boardRevealed[idx-1]){
+                    reveal(idx-1);
+                }
+
+                if (!boardRevealed[idx-11]){
+                    reveal(idx-11);
+                } 
+
+                if (!boardRevealed[idx+10]){
+                    reveal(idx+10);
+                } 
+                if (!boardRevealed[idx+9]){
+                    reveal(idx+9);
+                } 
+                if (!boardRevealed[idx-10]){
+                    reveal(idx-10);
+                } 
+
+                break;
+            default:
+                if (!boardRevealed[idx+1]){
+                    reveal(idx+1);
+                }
+                if (!boardRevealed[idx-1]){
+                    reveal(idx-1);
+                }
+                if (!boardRevealed[idx-10]){
+                    reveal(idx-10);
+                } 
+                if (!boardRevealed[idx-11]){
+                    reveal(idx-11);
+                } 
+                if (!boardRevealed[idx-9]){
+                    reveal(idx-9);
+                } 
+                if (!boardRevealed[idx+10]){
+                    reveal(idx+10);
+                } 
+                if (!boardRevealed[idx+9]){
+                    reveal(idx+9);
+                } 
+                if (!boardRevealed[idx+11]){
+                    reveal(idx+11);
+                } 
+        }
     }
 }
 
-function checkWin(){
 
-    // if all non-bomb squares revealed, then call serwin()
+function checkWin(){ 
+    let tally = boardRevealed.filter(x => x===1).length
+    console.log(tally)
+    if (tally === (100 - NUM_BOMBS)){
+        win()
+    }
+
 }
 
 function handleBoardRightClick(evt){
@@ -105,15 +181,34 @@ function generateBoard(idx){
     }
     for (i = 0 ; i <boardAdjBombs.length; i++){
         boardAdjBombs[i] = 0
-        isBomb(i+1) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
-        isBomb(i-1) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
-        isBomb(i+10) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
-        isBomb(i+9) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
-        isBomb(i+11) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
-        isBomb(i-10) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
-        isBomb(i-11) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
-        isBomb(i-9) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
+        let remainder = i%10;
+        switch(remainder){
+            case 0:
+                isBomb(i+1) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
+                isBomb(i+10) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
+                isBomb(i+11) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
+                isBomb(i-10) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
+                isBomb(i-9) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
+                break;
+            case 9:
+                isBomb(i-1) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
+                isBomb(i+10) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
+                isBomb(i+9) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
+                isBomb(i-10) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
+                isBomb(i-11) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
+                break;
+            default:
+                isBomb(i+1) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
+                isBomb(i-1) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
+                isBomb(i+10) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
+                isBomb(i+9) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
+                isBomb(i+11) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
+                isBomb(i-10) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
+                isBomb(i-11) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
+                isBomb(i-9) ? boardAdjBombs[i]++ : boardAdjBombs[i] = boardAdjBombs[i]+0
+
     }
+}
     gameStatus = "started";
 }
 
@@ -144,11 +239,11 @@ function renderBoard() {
 }
 
 function loss(){
-    gameStatus = "gameOver";
+    gameStatus = "loss";
 }
 
 function win(){
-    gameStatus = "gameOver";
+    gameStatus = "win";
 }
 
 
