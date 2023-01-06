@@ -1,4 +1,5 @@
-# minesweeper
+# MINESWEEPER
+A 10x10 version of the classic minesweeper game, popularized by Microsoft Minesweeper in 1990. 
 
 <img width="741" alt="Screen Shot 2023-01-05 at 4 03 52 PM" src="https://user-images.githubusercontent.com/62319919/210903064-e758e7a0-9749-4812-8dc0-52192a4b042c.png">
 
